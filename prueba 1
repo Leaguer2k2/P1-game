@@ -1,0 +1,95 @@
+#include <iostream>
+#include <vector>
+#include <chrono>
+#include <thread>
+#include <cstdlib>
+
+// Constantes
+const int GAME_WIDTH = 20;
+const int GAME_HEIGHT = 5;
+
+// variables
+bool gameOver;
+int score;
+int dinosaurPositionY;
+const int groundLevel = GAME_HEIGHT - 2;
+std::vector<int> obstacles;
+
+// inicializa todo
+void setup() {
+    gameOver = false;
+    score = 0;
+    dinosaurPositionY = groundLevel;
+    obstacles = {GAME_WIDTH};
+}
+
+// dibujo 
+void draw() {
+    std::system("clear"); // For Linux/MacOS, use "cls" for Windows
+    for (int i = 0; i < GAME_HEIGHT; ++i) {
+        for (int j = 0; j < GAME_WIDTH; ++j) {
+			
+            if (i == dinosaurPositionY && j == 2) {
+                std::cout << "D";
+            } else if (std::find(obstacles.begin(), obstacles.end(), j) != obstacles.end() && i == groundLevel) {
+                std::cout << "O";
+            } else {
+                std::cout << " ";
+            }
+        }
+        std::cout << "\n";
+    }
+    std::cout << "Score: " << score << "\n";
+}
+
+// actualizar el juego
+void update() {
+    char input;
+    if (std::cin.peek() == '\n') {
+        std::cin >> input;
+        if (input == ' ') {
+            dinosaurPositionY = std::max(0, groundLevel - 2);
+        }
+    }
+
+    // gravedad
+    if (dinosaurPositionY < groundLevel) {
+        dinosaurPositionY++;
+    }
+
+    // obstacles
+    for (int& obstacle : obstacles) {
+        --obstacle;
+    }
+    if (obstacles.front() < 0) {
+        obstacles.push_back(GAME_WIDTH - 1);
+        obstacles.erase(obstacles.begin());
+    }
+
+    // puntaje+
+    score++;
+
+    // Collision detection
+    for (int& obstacle : obstacles) {
+        if (dinosaurPositionY == groundLevel && obstacle >= 2 && obstacle <= 4) {
+            gameOver = true;
+            break;
+        }
+    }
+}
+
+// corre el uego
+void run() {
+    setup();
+    while (!gameOver) {
+        draw();
+        update();
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+    std::cout << "Game Over! Tu nota final es: " << score << std::endl;
+}
+
+int main() {
+    run();
+    return 0;
+}
