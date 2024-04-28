@@ -1,0 +1,60 @@
+#include <iostream>
+#include <chrono>
+#include <thread>
+#include "dinosprites.h"
+#include "menu.h"
+
+void runGame() {
+    char keyPress;
+    bool isJumping = false;
+    bool gameOver = false;
+
+    // La posición y existencia de un obstáculo
+    int obstaclePosition = 50; // Posición inicial lejos del dinosaurio
+
+    while (!gameOver) {
+        system("clear"); // Limpia la pantalla
+
+        // Muestra el dinosaurio, alternando entre sprites si no está saltando
+        if (!isJumping) {
+            dino1();
+        } else {
+            dino2(); // Usar un sprite de salto
+            // La lógica para manejar la altura del salto y la gravedad aquí
+        }
+
+        // Muestra el obstáculo y el suelo
+        for (int i = 0; i < obstaclePosition; i++) std::cout << " ";
+        std::cout << "O\n"; // Simula el obstáculo
+        
+        printGround(); // Función para imprimir el suelo
+
+        // Simulación de movimiento del obstáculo hacia el dinosaurio
+        obstaclePosition--;
+        if (obstaclePosition < 1) {
+            obstaclePosition = 50; // Reinicia la posición del obstáculo
+        }
+
+        // Comprobación de la colisión
+        if (obstaclePosition < 3 && isJumping == false) {
+            gameOver = true; // Termina el juego si hay colisión y el dinosaurio no está saltando
+        }
+
+        // Captura de teclas para saltar o terminar el juego
+        if (std::cin.peek() != EOF) {
+            std::cin >> keyPress;
+            if (keyPress == ' ') isJumping = true; // Espacio para saltar
+            if (keyPress == 'q') gameOver = true; // 'q' para salir
+        }
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(100)); // Controla la velocidad del juego
+    }
+
+    std::cout << "Game Over!" << std::endl;
+}
+
+int main() {
+    showMenu();
+    runGame();
+    return 0;
+}
