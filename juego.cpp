@@ -1,10 +1,16 @@
 #include <iostream>
 #include <chrono>
 #include <thread>
-
+//librerias que hice para hacer esto mas wonito
 #include "dinosprites.h"
+#include "menu.h"
 
 int main() {
+    showMenu(); 
+    return 0;
+}
+
+int dinosaurio() {
     char endGame = 'n';
 
     while (endGame != 'y') {
@@ -28,3 +34,4 @@ int main() {
 
     return 0;
 }
+
